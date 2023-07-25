@@ -2,7 +2,7 @@
 title: "Networking Concepts with Network Namespaces and Docker Containers"
 date: 2023-07-24T05:20:00-05:00
 tags: []
-categories: []
+categories: [Networking]
 weight: 50
 show_comments: true
 katex: true
