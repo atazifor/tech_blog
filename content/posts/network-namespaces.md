@@ -9,6 +9,8 @@ katex: true
 draft: false
 ---
 
+{{< toc >}}
+
 In this tutorial, we will explore essential networking concepts using network namespaces and docker containers. 
 By understanding these fundamentals, you will be well-prepared to dive into networking in Kubernetes and other container orchestration platforms.
 
@@ -25,9 +27,11 @@ One particular namespace that plays a vital role in container networking is the 
 In this lab, we will explore essential networking concepts using network namespaces and Docker containers. We'll set up two network namespaces, red and blue, and create virtual Ethernet (veth) pairs to establish communication between them. We will also introduce a network bridge and demonstrate how to enable internet access for the containers within the namespaces.
 
 Let's get started!
+
 # Step 1: Create Network Namespaces
 
 We begin by creating two network namespaces, `red` and `blue`.
+{{< figure src="/img/posts/networking/starter-ns.svg" width=300 title="" >}}
 
 ```shell
 ip netns add red
@@ -145,3 +149,61 @@ Congratulations! You have successfully explored essential networking concepts us
 namespaces and Docker containers. Understanding these fundamentals will serve as a solid foundation for further exploring more complex networking scenarios and container orchestration platforms like Kubernetes.
 
 Happy networking exploration!
+
+
+# Running the Tutorial on macOS with Docker
+
+If you are using macOS and want to follow the networking tutorial that involves network namespaces and Docker containers, you might have noticed that macOS lacks some of the essential networking commands like `ip`, `ping`, and `iptables`. To overcome this limitation and ensure you can fully participate in the tutorial, we have prepared a Docker image that provides the necessary tools.
+
+## Using the Docker Image
+
+To get started, make sure you have Docker installed on your macOS system. If you haven't installed Docker yet, you can download it from the official Docker website (https://www.docker.com/products/docker-desktop).
+
+Next, we will create and use a Docker image that contains the required networking tools. The Docker image is based on the official Ubuntu base image and includes packages like `iproute2`, `ping`, `net-tools`, `dnsutils`, and `iptables`. These packages are essential for the tutorial as they allow you to perform various networking tasks within network namespaces.
+
+### Dockerfile Contents
+
+Below is the content of the Dockerfile used to build the Docker image:
+
+```dockerfile
+# Use the official Ubuntu base image
+FROM ubuntu:latest
+
+# Install sudo and essential networking tools
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y sudo iproute2 iputils-ping \
+    net-tools dnsutils iptables && \
+    rm -rf /var/lib/apt/lists/*
+
+# Start an interactive shell by default
+CMD ["/bin/bash"]
+```
+
+### Building the Docker Image
+
+To build the Docker image, save the contents of the above Dockerfile in a file named "Dockerfile" (without any file extension) within a directory on your macOS system. Then, open the terminal, navigate to the directory containing the Dockerfile, and execute the following command:
+
+```bash
+docker build -t ubuntu_with_basic_net -f Dockerfile .
+```
+
+This command will build the Docker image and tag it with the name "ubuntu_with_basic_net". The `-f` flag specifies the path to the Dockerfile.
+
+### Running the Docker Container
+
+Once the Docker image is built, you can run a Docker container using the image. This container will provide you with all the necessary networking tools to perform the tutorial.
+
+Use the following command to start the Docker container:
+
+```bash
+docker run -it --name containerA --privileged ubuntu_with_basic_net
+```
+
+The `--privileged` flag is used to grant the container extended privileges, including access to devices on the host system, which may be required for certain networking operations.
+
+## Following the Tutorial
+
+With the container running, you can now proceed to follow the networking tutorial using network namespaces and Docker containers. Inside the container, you have access to commands like `ip`, `ping`, `netstat`, `iptables`, and more, allowing you to perform the networking tasks within network namespaces as described in the tutorial.
+
+If you encounter any issues or have questions during the process, feel free to ask for further assistance. Happy networking exploration on your macOS system!
