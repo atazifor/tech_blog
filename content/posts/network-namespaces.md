@@ -135,7 +135,7 @@ This command brings the `v-net-0` bridge up, enabling it to forward traffic.
 
 ### Assign IP Address to the Bridge
 
-On the host computer, which is on the 192.168.1.0/24 network, attempting to ping 192.168.15.2 results in a *host not reachable* message because the host and 192.168.15.2 are on two separate networks. 
+On the host computer/container (172.17.0.2/16), which is on the 172.17.0.0/16 network, attempting to ping 192.168.15.2 results in a *host not reachable* message because the host and 192.168.15.2 are on two separate networks. 
 However, since `v-net-0` is just another virtual Ethernet port on the host, if we assign an IP address to it within the 192.168.15.0/24 network range, we should be able to reach other networks that are connected to `v-net-0`. 
 In essence, v-net-0 acts as a switch, facilitating communication between the connected namespaces.
 We assign an IP address to the bridge so that containers connected to it can communicate with the outside world.
@@ -145,32 +145,54 @@ ip addr add 192.168.15.5/24 dev v-net-0
 ```
 This command assigns the IP address `192.168.15.5` to the `v-net-0` bridge.
 
-Note that the 192.168.15.0/24 network is private, within the host and has no knowledge of the outside world. 
-Attempting to ping 8.8.8.8, which is Google's DNS server will result in a *host not reachable* message.
-The only way to reach the outside is via the **eth0** interface.
+### Network Gateways and NAT
 
-### Enable Forwarding and NAT
+Note that the 192.168.15.0/24 network is private, within the host and has no knowledge of the outside world.
 
-To enable internet access for the containers, we need to enable IP forwarding and set up NAT.
+Imagine you had another host, 172.17.0.3/16, and you want to reach this host from a computer in the red namespace in your private network.
+
+If we issued the command `ip netns exec red ping 172.17.0.3` will result in a *host not reachable* message.
+But realize that from the private network, we could reach other devices on the host's local area network via the `eth0` interface.
+Essentially, our host will act as a **gateway** to the outside world.
 
 ```shell
-echo "1" > /proc/sys/net/ipv4/ip_forward
+ip netns exec red ip route add 172.17.0.3/15 via 192.168.15.5/24
+```
+Here is now a what our network looks like.
+{{< figure src="/img/posts/networking/netns-gateway.svg" width=900 title="" >}}
+
+If we now try to ping `172.17.0.3` from the `red` namespace, `ip netns exec red ping 172.17.0.3`,
+we no longer get the *host not reachable*; we just don't get a REPLY. 
+
+The reason is for this is because `172.17.0.3` does not know about the private IP address space `192.168.15.0/24`
+so it does not know how to route traffic back to it.
+
+In order for outside networks to know about ip addresses in the private network space we 
+must set up Network Address Translation (NAT) - details of this can be covered in another tutorial.
+
+```shell
 iptables -t nat -A POSTROUTING -s 192.168.15.0/24 -j MASQUERADE
 ```
-The first command enables IP forwarding, allowing the bridge (`v-net-0`) to forward packets between interfaces. The second command sets up NAT (Network Address Translation) to enable internet access for the containers within the namespaces.
+Now if you do `ip netns exec red ping 172.17.0.3`, you should get a REPLY.
 
-### Test Internet Access
+### Internet Access
 
-Finally, let's test internet access from within the `red` namespace.
+What if you wanted to access the internet from the red namespace?
+
+Attempting to ping `8.8.8.8`, which is Google's DNS server on the internet, will result in a *host not reachable* message.
+
+Similarly, for the `red` namespace we have to use the host as a **Gateway** to the internet.
 
 ```shell
-ip netns exec red ping 8.8.8.8
+ip netns exec red ip route add default via 192.168.15.5/24
 ```
-This command tests internet access from within the `red` namespace by pinging the Google DNS server.
+This command basically says that any destination that is not explicitly set should be routed via `192.168.15.5/24`
 
-Congratulations! You have successfully explored essential networking concepts using network
+Finally, we can access the internet from within the `red` namespace. `ip netns exec red ping 8.8.8.8` now works as expected.
 
-namespaces and Docker containers. Understanding these fundamentals will serve as a solid foundation for further exploring more complex networking scenarios and container orchestration platforms like Kubernetes.
+
+Congratulations! You have successfully explored essential networking concepts using network namespaces and Docker containers. 
+Understanding these fundamentals will serve as a solid foundation for further exploring more complex networking scenarios and container orchestration platforms like Kubernetes.
 
 Happy networking exploration!
 
