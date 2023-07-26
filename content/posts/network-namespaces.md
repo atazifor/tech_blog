@@ -31,6 +31,7 @@ Let's get started!
 # Step 1: Create Network Namespaces
 
 We begin by creating two network namespaces, `red` and `blue`.
+
 {{< figure src="/img/posts/networking/starter-ns.svg" width=300 title="" >}}
 
 ```shell
@@ -43,6 +44,8 @@ The `ip netns add` command is used to create separate network namespaces for `re
 
 Next, we create veth pairs, `veth-red` and `veth-blue`, to connect the namespaces.
 
+{{< figure src="/img/posts/networking/veth-link.svg" width=300 title="" >}}
+
 ```shell
 ip link add veth-red type veth peer name veth-blue
 ```
@@ -51,6 +54,8 @@ The `ip link add` command creates two virtual Ethernet (veth) devices, `veth-red
 # Step 3: Assign Interfaces to Respective Namespaces
 
 Now, we assign the veth interfaces to their corresponding namespaces.
+
+{{< figure src="/img/posts/networking/netns-link.svg" width=300 title="" >}}
 
 ```shell
 ip link set veth-red netns red
@@ -61,6 +66,8 @@ The `ip link set` command moves the `veth-red` interface into the `red` namespac
 # Step 4: Configure IP Addresses
 
 We configure IP addresses for the veth interfaces inside the namespaces.
+
+{{< figure src="/img/posts/networking/netns-ip.svg" width=300 title="" >}}
 
 ```shell
 ip -n red addr add 192.168.15.1/24 dev veth-red
