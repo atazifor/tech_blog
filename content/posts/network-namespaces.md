@@ -203,7 +203,7 @@ If you are using macOS and want to follow the networking tutorial that involves 
 
 ### Using the Docker Image
 
-To get started, make sure you have Docker installed on your macOS system. If you haven't installed Docker yet, you can download it from the official Docker website (https://www.docker.com/products/docker-desktop).
+To get started, make sure you have Docker installed on your macOS system. If you haven't installed Docker yet, you can download it from the official <a href="https://www.docker.com/products/docker-desktop" target="_blank">Docker website</a>.
 
 Next, we will create and use a Docker image that contains the required networking tools. The Docker image is based on the official Ubuntu base image and includes packages like `iproute2`, `ping`, `net-tools`, `dnsutils`, and `iptables`. These packages are essential for the tutorial as they allow you to perform various networking tasks within network namespaces.
 
