@@ -3,7 +3,7 @@ theme = "hugo-theme-flat"
 enableRobotsTXT = true
 hasCJKLanguage = true
 paginate = 4
-baseURL = ""
+baseURL = "https://tazifor.com/"
 
 # these values are hugo built in markup config
 [markup.highlight]
