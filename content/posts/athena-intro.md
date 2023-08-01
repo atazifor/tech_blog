@@ -8,7 +8,7 @@ show_comments: true
 katex: true
 draft: false
 ---
-This tutorial provides an overview of Amazon Athena, an interactive query service that allows you to analyze data directly in Amazon Simple Storage Service (S3) using standard SQL. 
+This post provides an overview of Amazon Athena, an interactive query service that allows you to analyze data directly in Amazon Simple Storage Service (S3) using standard SQL. 
 It details Athena's benefits, use cases, cost structure, and its schema-on-read approach. 
 It also includes step-by-step instructions on how to set up Athena, create a database, define a table schema for various data formats, execute queries, and use data partitioning for improved performance and reduced costs.
 
