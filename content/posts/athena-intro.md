@@ -1,5 +1,5 @@
 ---
-title: "Analyzing Data in Amazon S3 using Amazon Athena: A Comprehensive Tutorial"
+title: "Analyzing Data in Amazon S3 using Amazon Athena: A Simple Guide"
 date: 2023-07-27T20:50:13-05:00
 tags: [Amazon Athena, AWS S3, SQL]
 categories: [Cloud Storage, Data Management, Big Data Analysis]
